@@ -160,29 +160,29 @@ def validate_market_data(candles):
     return valid_candles, invalid_candles
 
 
+if __name__ == "__main__":
 
+    create_table()
 
-create_table()
+    data = get_market_data("EUR/USD", "1h")
 
-data = get_market_data("EUR/USD", "1h")
+    candles = transform_market_data(
+        data,
+        "EUR/USD",
+        "1h"
+    )
+    valid_candles, invalid_candles = validate_market_data(candles)
+    print(f"Valid candles: {len(valid_candles)}")
+    print(f"Invalid candles: {len(invalid_candles)}")
 
-candles = transform_market_data(
-    data,
-    "EUR/USD",
-    "1h"
-)
-valid_candles, invalid_candles = validate_market_data(candles)
-print(f"Valid candles: {len(valid_candles)}")
-print(f"Invalid candles: {len(invalid_candles)}")
+    for candle, error in invalid_candles:
+        print(error["reason"], candle)
 
-for candle, error in invalid_candles:
-    print(error["reason"], candle)
+    filtered_candles = filter_new_candles(
+        valid_candles,
+        get_latest_datetime("EUR/USD", "1h")
+    )
 
-filtered_candles = filter_new_candles(
-    valid_candles,
-    get_latest_datetime("EUR/USD", "1h")
-)
-
-load_market_data(filtered_candles)
+    load_market_data(filtered_candles)
 
 
